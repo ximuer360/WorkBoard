@@ -24,7 +24,7 @@ export const useTaskStore = defineStore('tasks', {
       }
     },
 
-    async addTask(title: string) {
+    async addTask(title: string, content: string) {
       try {
         this.loading = true;
         this.error = null;
@@ -32,6 +32,7 @@ export const useTaskStore = defineStore('tasks', {
         const newTask: Task = {
           id: Date.now().toString(),
           title: title.trim(),
+          content: content.trim(),
           status: 'todo',
           createTime: new Date().toISOString(),
           updateTime: new Date().toISOString(),
@@ -40,7 +41,6 @@ export const useTaskStore = defineStore('tasks', {
         console.log('Creating new task:', newTask);
         
         const response = await window.electronAPI.addTask(newTask);
-        console.log('Database response:', response);
         
         if (!response.success) {
           throw new Error(response.error || 'Failed to add task');

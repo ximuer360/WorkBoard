@@ -133,8 +133,21 @@ async function createWindow() {
       mainWindow = null;
     });
 
-    // 创建菜单
+    // 创建菜单模板
     const template = [
+      {
+        label: '编辑',
+        submenu: [
+          { role: 'undo', label: '撤销' },
+          { role: 'redo', label: '重做' },
+          { type: 'separator' },
+          { role: 'cut', label: '剪切' },
+          { role: 'copy', label: '复制' },
+          { role: 'paste', label: '粘贴' },
+          { role: 'delete', label: '删除' },
+          { role: 'selectAll', label: '全选' }
+        ]
+      },
       {
         label: '开发',
         submenu: [
@@ -149,14 +162,22 @@ async function createWindow() {
       }
     ];
 
-    // 仅在开发环境显示开发菜单
-    if (process.env.VITE_DEV_SERVER_URL) {
-      const menu = Menu.buildFromTemplate(template);
-      Menu.setApplicationMenu(menu);
-    } else {
-      // 生产环境可以隐藏菜单
-      Menu.setApplicationMenu(null);
-    }
+    // 创建菜单
+    const menu = Menu.buildFromTemplate(template);
+    Menu.setApplicationMenu(menu);
+
+    // 允许右键菜单
+    mainWindow.webContents.on('context-menu', (_, props) => {
+      const { selectionText, isEditable } = props;
+      if (isEditable || selectionText) {
+        Menu.buildFromTemplate([
+          { role: 'copy', label: '复制', enabled: !!selectionText },
+          { role: 'cut', label: '剪切', enabled: isEditable },
+          { role: 'paste', label: '粘贴', enabled: isEditable },
+          { role: 'selectAll', label: '全选' }
+        ]).popup();
+      }
+    });
   } catch (error) {
     console.error('Error creating window:', error);
     dialog.showErrorBox('启动错误', error.message);

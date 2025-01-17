@@ -7,7 +7,7 @@ const __dirname$1 = url.fileURLToPath(new URL(".", typeof document === "undefine
 let taskDb;
 async function initDatabase() {
   try {
-    const { taskDb: db } = await Promise.resolve().then(() => require("./database-DeitMNJt.js"));
+    const { taskDb: db } = await Promise.resolve().then(() => require("./database-CIDQQCxm.js"));
     taskDb = db;
     console.log("Database initialized successfully in main process");
   } catch (err) {
@@ -111,6 +111,19 @@ async function createWindow() {
     });
     const template = [
       {
+        label: "编辑",
+        submenu: [
+          { role: "undo", label: "撤销" },
+          { role: "redo", label: "重做" },
+          { type: "separator" },
+          { role: "cut", label: "剪切" },
+          { role: "copy", label: "复制" },
+          { role: "paste", label: "粘贴" },
+          { role: "delete", label: "删除" },
+          { role: "selectAll", label: "全选" }
+        ]
+      },
+      {
         label: "开发",
         submenu: [
           {
@@ -123,12 +136,19 @@ async function createWindow() {
         ]
       }
     ];
-    if (process.env.VITE_DEV_SERVER_URL) {
-      const menu = electron.Menu.buildFromTemplate(template);
-      electron.Menu.setApplicationMenu(menu);
-    } else {
-      electron.Menu.setApplicationMenu(null);
-    }
+    const menu = electron.Menu.buildFromTemplate(template);
+    electron.Menu.setApplicationMenu(menu);
+    mainWindow.webContents.on("context-menu", (_, props) => {
+      const { selectionText, isEditable } = props;
+      if (isEditable || selectionText) {
+        electron.Menu.buildFromTemplate([
+          { role: "copy", label: "复制", enabled: !!selectionText },
+          { role: "cut", label: "剪切", enabled: isEditable },
+          { role: "paste", label: "粘贴", enabled: isEditable },
+          { role: "selectAll", label: "全选" }
+        ]).popup();
+      }
+    });
   } catch (error) {
     console.error("Error creating window:", error);
     electron.dialog.showErrorBox("启动错误", error.message);

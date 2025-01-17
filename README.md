@@ -22,6 +22,9 @@ A desktop task management application featuring Kanban-style workflow, built wit
 - Pinia v2.1.7
 - SQLite (better-sqlite3)
 - Vite v5.0.8
+- Vite-plugin-electron v0.3.0
+- Electron-builder v25.0.5
+- Node v18 测试了,必须18一下,高于18会报错,npm install会报错
 
 ## 📦 Installation / 安装
 
@@ -45,6 +48,7 @@ npm run build
 ## 🚀 Usage / 使用方法
 
 ### Development / 开发
+#### npm run electron:dev
 
 ```bash
 # Start the development server

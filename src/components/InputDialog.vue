@@ -1,55 +1,75 @@
 <template>
   <div v-if="show" class="dialog-overlay">
     <div class="dialog-content">
-      <h3>{{ title }}</h3>
+      <h3>新建任务</h3>
+      <!-- 标题输入 -->
       <input
-        ref="inputRef"
-        v-model="inputValue"
+        ref="titleInputRef"
+        v-model="taskData.title"
         type="text"
-        :placeholder="placeholder"
-        @keyup.enter="handleConfirm"
-        @keyup.esc="handleCancel"
+        placeholder="请输入标题"
+        @keyup.enter="focusContent"
       />
+      <!-- 内容输入 -->
+      <textarea
+        ref="contentTextareaRef"
+        v-model="taskData.content"
+        placeholder="请输入内容（支持多行）"
+        class="content-textarea"
+        @keyup.ctrl.enter="handleConfirm"
+      ></textarea>
       <div class="dialog-buttons">
         <button @click="handleCancel">取消</button>
-        <button @click="handleConfirm" :disabled="!inputValue.trim()">确定</button>
+        <button 
+          @click="handleConfirm" 
+          :disabled="!taskData.title.trim()"
+        >确定</button>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, reactive, onMounted } from 'vue';
 
 const props = defineProps<{
   show: boolean;
-  title: string;
-  placeholder?: string;
 }>();
 
 const emit = defineEmits<{
-  (e: 'confirm', value: string): void;
+  (e: 'confirm', title: string, content: string): void;
   (e: 'cancel'): void;
 }>();
 
-const inputValue = ref('');
-const inputRef = ref<HTMLInputElement | null>(null);
+const taskData = reactive({
+  title: '',
+  content: ''
+});
+
+const titleInputRef = ref<HTMLInputElement | null>(null);
+const contentTextareaRef = ref<HTMLTextAreaElement | null>(null);
 
 onMounted(() => {
   if (props.show) {
-    inputRef.value?.focus();
+    titleInputRef.value?.focus();
   }
 });
 
+const focusContent = () => {
+  contentTextareaRef.value?.focus();
+};
+
 const handleConfirm = () => {
-  if (inputValue.value.trim()) {
-    emit('confirm', inputValue.value.trim());
-    inputValue.value = '';
+  if (taskData.title.trim()) {
+    emit('confirm', taskData.title.trim(), taskData.content.trim());
+    taskData.title = '';
+    taskData.content = '';
   }
 };
 
 const handleCancel = () => {
-  inputValue.value = '';
+  taskData.title = '';
+  taskData.content = '';
   emit('cancel');
 };
 </script>
@@ -72,57 +92,52 @@ const handleCancel = () => {
   background: white;
   padding: 20px;
   border-radius: 8px;
-  min-width: 300px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+  width: 90%;
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 
-h3 {
-  margin: 0 0 16px 0;
-  color: #1f1f1f;
-}
-
-input {
+input, .content-textarea {
   width: 100%;
   padding: 8px;
-  border: 1px solid #d9d9d9;
+  border: 1px solid #ddd;
   border-radius: 4px;
-  margin-bottom: 16px;
   font-size: 14px;
 }
 
-input:focus {
-  outline: none;
-  border-color: #1890ff;
-  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+.content-textarea {
+  min-height: 120px;
+  resize: vertical;
+  font-family: inherit;
+  line-height: 1.5;
 }
 
 .dialog-buttons {
   display: flex;
   justify-content: flex-end;
-  gap: 8px;
+  gap: 10px;
 }
 
 button {
-  padding: 4px 15px;
+  padding: 6px 16px;
+  border: none;
   border-radius: 4px;
-  border: 1px solid #d9d9d9;
-  background: white;
   cursor: pointer;
-  transition: all 0.3s;
+}
+
+button:first-child {
+  background: #f5f5f5;
 }
 
 button:last-child {
   background: #1890ff;
-  border-color: #1890ff;
   color: white;
 }
 
-button:hover {
-  opacity: 0.8;
-}
-
 button:disabled {
-  opacity: 0.5;
+  background: #ccc;
   cursor: not-allowed;
 }
 </style> 

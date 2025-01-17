@@ -36,6 +36,7 @@ try {
     CREATE TABLE IF NOT EXISTS tasks (
       id TEXT PRIMARY KEY,
       title TEXT NOT NULL,
+      content TEXT,
       status TEXT NOT NULL,
       createTime TEXT NOT NULL,
       updateTime TEXT NOT NULL
@@ -71,13 +72,14 @@ export const taskDb = {
       }
       
       const stmt = db.prepare(`
-        INSERT INTO tasks (id, title, status, createTime, updateTime) 
-        VALUES (@id, @title, @status, @createTime, @updateTime)
+        INSERT INTO tasks (id, title, content, status, createTime, updateTime) 
+        VALUES (@id, @title, @content, @status, @createTime, @updateTime)
       `);
       
       const params = {
         id: task.id,
         title: task.title,
+        content: task.content || '',
         status: task.status,
         createTime: task.createTime,
         updateTime: task.updateTime
@@ -94,7 +96,7 @@ export const taskDb = {
         }
         
         return result;
-      } catch (sqlError) {
+      } catch (sqlError: any) {
         console.error('SQL execution error:', sqlError);
         throw new Error(`Database error: ${sqlError.message}`);
       }
@@ -136,7 +138,8 @@ export const taskDb = {
       
       const stmt = db.prepare(`
         UPDATE tasks 
-        SET title = @title, 
+        SET title = @title,
+            content = @content, 
             status = @status, 
             updateTime = @updateTime 
         WHERE id = @id
@@ -145,6 +148,7 @@ export const taskDb = {
       const params = {
         id: task.id,
         title: task.title,
+        content: task.content || '',
         status: task.status,
         updateTime: task.updateTime
       };

@@ -19,7 +19,8 @@
         draggable="true"
         @dragstart="onDragStart($event, task)"
       >
-        {{ task.title }}
+        <div class="task-title">{{ task.title }}</div>
+        <div class="task-content" v-if="task.content">{{ task.content }}</div>
       </div>
     </div>
   </div>
@@ -136,14 +137,25 @@ const onDrop = (event: DragEvent) => {
 }
 
 .task-item {
+  background: white;
+  border-radius: 4px;
   padding: 12px;
   margin-bottom: 8px;
-  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   cursor: move;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
-  position: relative;
-  overflow: hidden;
+}
+
+.task-title {
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.task-content {
+  font-size: 14px;
+  color: #666;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.5;
 }
 
 .task-todo {
