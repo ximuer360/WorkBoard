@@ -80,7 +80,7 @@ workboard/
 ## 🖥️ Screenshots / 界面截图
 
 
-![alt text](QQ_1735302940449.png)
+![alt text](image.png)
 ![alt text](QQ_1735302990827.png)
 ## 🔧 Configuration / 配置
 
